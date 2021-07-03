@@ -1,0 +1,44 @@
+table {
+  width: 100%;
+
+  .mat-sucess {
+    background-color: green;
+    color: white;
+  }
+  mat-list {
+    mat-list-item {
+      height: initial;
+      margin-top: 8px;
+  
+      .vaccine-age {
+        :host ::ng-deep.mat-list-item-content {
+          color: lightcoral !important;
+        }
+  
+      }
+  
+      .vaccine-fee {
+        div{
+          color: mediumblue !important;
+        }
+      }
+    }
+  }
+}
+
+.example-card {
+  margin: 13px 0px 50px 0px;
+  color: #002060;
+  min-height: 20em;
+
+  .mat-card-title {
+    font-size: 27px;
+  }
+
+  .mat-tabs {
+    width: 50em;
+    padding: 0px 210px;
+  }
+}
+
+

@@ -1,0 +1,81 @@
+<div>
+  <mat-card class="example-card">
+    <mat-card-header>
+      <mat-card-title>Book Appointment</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        The slots availability data displayed in the pincode or district search is provided by the state govt and
+        private hospitals. Cowin does not create this data, the data accuracy, or guarantee that it is the most recent
+        data available from the data provider.
+      </p>
+    </mat-card-content>
+    <div>
+      <mat-card-actions>
+        <div class="mat-tabs">
+          <mat-tab-group (selectedTabChange)="onTabChanged($event);" color="accent" backgroundColor="primary">
+            <mat-tab label="Search By PIN">
+              <ng-container *ngIf="searchOptionsTab1.length">
+                <app-search [searchOptions]="searchOptionsTab1" (searchEvent)="searchDetails($event)"></app-search>
+              </ng-container>
+            </mat-tab>
+            <mat-tab label="Search By District">
+              <ng-container *ngIf="searchOptionsTab2.length && isSecondTab">
+                <app-search [searchOptions]="searchOptionsTab2" [activateApis]="api"
+                  (searchEvent)="searchDetails($event)"></app-search>
+              </ng-container>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+      </mat-card-actions>
+    </div>
+  </mat-card>
+</div>
+<div class="mat-elevation-z8">
+  <ng-container *ngIf="isData && dataSource.filteredData">
+  <table mat-table [dataSource]="dataSource">
+    <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index" matColumnDef="{{disCol}}">
+      <th mat-header-cell *matHeaderCellDef> {{disCol}}</th>
+      <ng-container *ngIf="colIndex === 0; else other">
+        <td mat-cell *matCellDef="let element">
+          <mat-list>
+            <ng-container *ngFor="let item of element.address">
+              <mat-list-item>{{item.name}}</mat-list-item>
+              <mat-list-item>{{item.address}}</mat-list-item>
+            </ng-container>
+          </mat-list>
+        </td>
+ 
+      </ng-container>
+
+      <ng-template #other>
+        <td mat-cell *matCellDef="let element; let i = index">
+          <mat-list>
+            <ng-container *ngIf="dataSource.filteredData[i].center?.sessions[colIndex -1]">
+              <mat-list-item><button mat-raised-button
+                  [color]="dataSource.filteredData[i].center?.sessions[colIndex -1].available_capacity_dose1 > 0 ? 'sucess' : 'warn'">{{dataSource.filteredData[i].center?.sessions[colIndex
+                  -1].available_capacity_dose1}}</button></mat-list-item>
+              <mat-list-item>{{dataSource.filteredData[i].center?.sessions[colIndex -1].vaccine}}</mat-list-item>
+              <mat-list-item class="vaccine-fee">{{dataSource.filteredData[i].center?.fee_type}}</mat-list-item>
+              <mat-list-item class="vaccine-age">{{dataSource.filteredData[i].center?.sessions[colIndex -1].min_age_limit}}
+              </mat-list-item>
+            </ng-container>
+            <ng-container *ngIf="!dataSource.filteredData[i].center?.sessions[colIndex -1]">
+              <mat-list-item><button mat-raised-button color="accent">NA</button></mat-list-item>
+            </ng-container>
+          </mat-list>
+        </td>
+        <!-- <div style="display: flex; flex-direction: column;"><span *ngFor="let elem of element.VaccineName">{{elem}}</span></div> </td> -->
+      </ng-template>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</ng-container >
+<span align="center" *ngIf="!isData"> <h1>No Data Available</h1></span>
+  <mat-paginator [length]="isData"
+  [pageSize]="5" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+
+
+</div>

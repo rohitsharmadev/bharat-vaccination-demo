@@ -1,0 +1,56 @@
+<div class="mat-search-row">
+  <div *ngFor="let rowData of searchOptions; let key=index; trackBy:trackByFn;" class="mar-search-col">
+    <!-- <label *ngIf="rowData.details.type === 'select'">{{ rowData.details.generalDetails.lable }}</label> -->
+    <div *ngIf="rowData.details.type === 'select'">
+      <mat-form-field appearance="outline" *ngIf="rowData.details.type === 'select'">
+        <mat-select [(ngModel)]="searchData[key]" placeholder="{{rowData.details.generalDetails.lable }}">
+          <mat-option>
+            Select
+          </mat-option>
+          <mat-option *ngFor="let customSearchValue of rowData.details.DropdownDetails; trackBy:trackByFn;" [value]="customSearchValue.value">
+            {{ customSearchValue.displayName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+
+    <div *ngIf="rowData.details.type === 'text'">
+      <mat-form-field appearance="outline" class="example-full-width">
+        <input matInput (keydown.enter)="searchDetail()" [(ngModel)]="searchData[key]" placeholder="{{ rowData.details.generalDetails.placeholder }}"
+          value="">
+      </mat-form-field>
+      <!-- <input (keydown.enter)="searchDetail()" [(ngModel)]="searchData[key]" placeholder="{{ rowData.details.generalDetails.placeholder }}"> -->
+    </div>
+
+
+    <div *ngIf="rowData.details.type === 'stateSelect'">
+      <mat-form-field *ngIf="rowData.details.type === 'stateSelect'">
+        <mat-select [(ngModel)]="searchData[key]" placeholder="Select State" (selectionChange)="changeState($event.value)">
+          <!-- <app-mat-select-search [formControl]="itemMultiFilterCtrlForState"></app-mat-select-search> -->
+          <mat-option>Select State</mat-option>
+          <mat-option *ngFor="let state of allStates; trackBy:trackByFn;" (ng-checked)="true" [value]="state.state_id">
+            {{ state.state_name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+
+    <div *ngIf="rowData.details.type === 'citySelect'">
+      <mat-form-field *ngIf="rowData.details.type === 'citySelect'">
+        <mat-select [(ngModel)]="searchData[key]" placeholder="Select District">
+          <mat-option>Select District</mat-option>
+          <mat-option *ngFor="let city of allCities; trackBy:trackByFn;" (ng-checked)="true" [value]="city.district_id">
+            {{ city.district_name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+  </div>
+  <button *ngIf="searchOptions.length" type="button" mat-raised-button color="primary" class="btn btn-info-unfilled btn-mini search-btn pull-left"
+    (click)='searchDetail()'>Search</button>
+  <!-- <button *ngIf="searchOptions.length" type="button" mat-raised-button color="primary" class="btn btn-info-unfilled btn-mini search-btn pull-left ml-5"
+    (click)='resetDetail()'>{{ 'commonSearch.reset' | translate }}</button> -->
+</div>

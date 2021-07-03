@@ -1,0 +1,31 @@
+.mat-search-row{
+    display: flex;
+    margin-top: 15px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-left: 40px;
+    .input-bdr{
+        width: 200px;
+        margin-right:5px;
+        input{
+            border: solid 1px #ccc;
+            padding:10px;
+            height: 100%;
+            box-sizing: border-box;
+            width: 100%;
+        }
+    }
+
+    .mat-form-field-appearance-legacy{
+     .mat-form-field-wrapper{
+        margin-bottom: 0px;
+     }
+    }
+    .mat-form-field{
+        margin-right: 5px;
+    }
+    .mar-search-col{
+        margin-right: 20px;
+    }
+    
+}
