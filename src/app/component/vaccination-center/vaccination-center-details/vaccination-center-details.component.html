@@ -36,17 +36,17 @@
     <h5><span aria-label="Slot Search Results" tabindex="0"
         class="search-title accessibility-plugin-ac">Slot Search Results </span><span
         class="center-count accessibility-plugin-ac">({{isData}} Center(s) Found)</span></h5>
-    <div class="show-result"><span
+    <!-- <div class="show-result"><span
         class="show-result__text accessibility-plugin-ac">Showing results for: </span>
-    </div>
+    </div> -->
     <div class="filter-result"><span tabindex="0"
         class="filter-result__text accessibility-plugin-ac" aria-label="Filter results by">Filter results by: </span>
       <ul>
         <li>
           <p class="accessibility-plugin-ac">Availability:</p>
           <div class="agefilterblock">
-            <div class="form-check"><input type="checkbox" id="c1"
-                class="chk-btn"><label for="c1" tabindex="0" class="accessibility-plugin-ac">Availability
+            <div class="form-check"><input type="checkbox" id="c11"
+                class="chk-btn"><label for="c11" tabindex="0" class="accessibility-plugin-ac">Availability
                 </label></div>
           </div>
         </li>
@@ -78,15 +78,15 @@
         <li class="ng-star-inserted">
           <p class="accessibility-plugin-ac">Vaccine: </p>
           <div class="agefilterblock">
-            <div class="form-check ng-star-inserted" (click)="applyFilter('Covishield')"><input type="checkbox"
-                id="c3" class="chk-btn"><label for="c3" tabindex="0"
+            <div class="form-check ng-star-inserted" ><input type="checkbox"
+                id="c3" class="chk-btn" (change)="applyFilter($event, 'COVISHIELD')"><label for="c3" tabindex="0"
                 class="accessibility-plugin-ac">Covishield</label></div>
             <!---->
-            <div class="form-check ng-star-inserted"><input type="checkbox"
+            <div class="form-check ng-star-inserted"><input (change)="applyFilter($event, 'Covaxin')" type="checkbox"
                 id="c4" class="chk-btn"><label for="c4" tabindex="0"
                 class="accessibility-plugin-ac">Covaxin</label></div>
             <!---->
-            <div class="form-check ng-star-inserted"><input type="checkbox"
+            <div class="form-check ng-star-inserted"><input (change)="applyFilter($event, 'Sputnik V')" type="checkbox"
                 id="c5" class="chk-btn"><label for="c5" tabindex="0"
                 class="accessibility-plugin-ac">Sputnik V</label></div>
             <!---->

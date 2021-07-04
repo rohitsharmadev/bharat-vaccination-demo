@@ -13,6 +13,8 @@ export class VaccinationCenterDetailsComponent
   implements OnInit, AfterViewInit, OnDestroy {
   vaccinesByDist: Subscription;
   vaccinesByPin: Subscription;
+  tableData:any =[];
+  filters:any =[];
   displayedColumns: any[] = [' '];
   dataSource = new MatTableDataSource<any>();
   isData: number = 0;
@@ -105,6 +107,8 @@ export class VaccinationCenterDetailsComponent
     this.vaccinesByDist =this.vaccinationCenterService
       .searchForSlotsByDist(obj)
       .subscribe((result) => {
+        this.tableData =[];
+        this.tableData =result.centers;
         result.centers && result.centers.length ? this.getVaccinesList(result) : this.openSnackBar("No Records, please try with other options");
       });
   }
@@ -117,6 +121,8 @@ export class VaccinationCenterDetailsComponent
     this.vaccinesByPin= this.vaccinationCenterService
       .searchForSlotsByPin(obj)
       .subscribe((result) => {
+        this.tableData =[];
+        this.tableData =result.centers;
         result.centers && result.centers.length ? this.getVaccinesList(result) : this.openSnackBar("No Records, please try with other options");
       });
   }
@@ -142,10 +148,32 @@ export class VaccinationCenterDetailsComponent
     }
     flag && this.getSlotsList(finalSearch);
   }
-  applyFilter(param) {
-    console.log(param);
-    // const filterValue = (event.target as HTMLInputElement).value;
-    // this.dataSource.filter = filterValue.trim().toLowerCase();
+  applyFilter(event, key) {
+    console.log(event.target.checked);
+    if(event.target.checked) {
+      this.filters.push(key)
+    } else {
+      const index = this.filters.indexOf(key);
+if (index > -1) {
+  this.filters.splice(index, 1);
+}
+
+    }
+
+    
+    console.log(this.filters);
+    const filterValue = (event.target as HTMLInputElement).value;
+    console.log(this.dataSource);
+    //this.dataSource.filter = 'Krishna';
+     const filterData = this.tableData.filter((elem) => {
+       console.log(elem.fee_type === 'Free')
+       return elem.fee_type === 'Free' ? elem : null;
+     });
+     console.log(filterData);
+     this.getVaccinesList({centers: filterData});
+    //  this.dataSource = new MatTableDataSource<any>(filterData);
+    //  this.dataSource._updateChangeSubscription();
+    //  this.dataSource.paginator = this.paginator;
   }
 
   onTabChanged(event) {
