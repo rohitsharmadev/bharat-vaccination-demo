@@ -1,20 +1,22 @@
 import { VaccinationCenterService } from './../../../services/vaccination-center.service';
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { distinct } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-vaccination-center-details',
   templateUrl: './vaccination-center-details.component.html',
   styleUrls: ['./vaccination-center-details.component.scss'],
 })
 export class VaccinationCenterDetailsComponent
-  implements OnInit, AfterViewInit
-{
+  implements OnInit, AfterViewInit, OnDestroy {
+  vaccinesByDist: Subscription;
+  vaccinesByPin: Subscription;
   displayedColumns: any[] = [' '];
   dataSource = new MatTableDataSource<any>();
   isData: number = 0;
+  isSearchCalled = false;
   api: any = { countrySelect: 'countrySelect' };
   @ViewChild(MatPaginator) paginator: MatPaginator;
   isSecondTab: boolean = false;
@@ -64,7 +66,7 @@ export class VaccinationCenterDetailsComponent
   ngOnInit() {
     this.openSnackBar();
   }
-  openSnackBar(msg='Welcome to Bharat Vaccination Drive') {
+  openSnackBar(msg = 'Welcome to Bharat Vaccination Drive') {
     const config = { duration: 5000 };
     this._snackBar.open(
       msg,
@@ -76,33 +78,34 @@ export class VaccinationCenterDetailsComponent
     this.dataSource.paginator = this.paginator;
   }
 
-  getVaccinesList =(result) => {
+  getVaccinesList = (result) => {
     let vaccineDetails: any = [];
-        for (let [i, vaccine] of result.centers.entries()) {
-          vaccineDetails.push({
-            center: vaccine,
-            address: [
-              { name: vaccine.name },
-              {
-                address: `${vaccine.address},${vaccine.district_name},${vaccine.state_name},${vaccine.pincode}`,
-              },
-            ],
-          });
-        }
-        this.dataSource = new MatTableDataSource<any>(vaccineDetails);
-        this.dataSource._updateChangeSubscription();
-        this.dataSource.paginator = this.paginator;
-        this.isData = vaccineDetails.length ? vaccineDetails.length : 0;
+    for (let [i, vaccine] of result.centers.entries()) {
+      vaccineDetails.push({
+        center: vaccine,
+        address: [
+          { name: vaccine.name },
+          {
+            address: `${vaccine.address},${vaccine.district_name},${vaccine.state_name},${vaccine.pincode}`,
+          },
+        ],
+      });
+    }
+    this.dataSource = new MatTableDataSource<any>(vaccineDetails);
+    this.dataSource._updateChangeSubscription();
+    this.dataSource.paginator = this.paginator;
+    this.isData = vaccineDetails.length ? vaccineDetails.length : 0;
   }
   getSlotListByDist(distId) {
     const obj = {
       distId: distId,
       date: new Date()
     };
-    this.vaccinationCenterService
+    this.isSearchCalled =true;
+    this.vaccinesByDist =this.vaccinationCenterService
       .searchForSlotsByDist(obj)
       .subscribe((result) => {
-        result.centers &&  result.centers.length ? this.getVaccinesList(result) : this.openSnackBar("No Records, please try with other options");
+        result.centers && result.centers.length ? this.getVaccinesList(result) : this.openSnackBar("No Records, please try with other options");
       });
   }
   getSlotListByPin(pin) {
@@ -110,10 +113,11 @@ export class VaccinationCenterDetailsComponent
       pin: pin,
       date: new Date()
     };
-    this.vaccinationCenterService
+    this.isSearchCalled =true;
+    this.vaccinesByPin= this.vaccinationCenterService
       .searchForSlotsByPin(obj)
       .subscribe((result) => {
-        result.centers && result.centers.length ? this.getVaccinesList(result) : this.openSnackBar("No Records");
+        result.centers && result.centers.length ? this.getVaccinesList(result) : this.openSnackBar("No Records, please try with other options");
       });
   }
   getSlotsList(finalSearch) {
@@ -138,11 +142,25 @@ export class VaccinationCenterDetailsComponent
     }
     flag && this.getSlotsList(finalSearch);
   }
+  applyFilter(param) {
+    console.log(param);
+    // const filterValue = (event.target as HTMLInputElement).value;
+    // this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
 
   onTabChanged(event) {
     if (event.index === 1) {
       this.isSecondTab = true;
     } else if (event.index === 0) {
+    }
+  }
+  ngOnDestroy() {
+    this.isSearchCalled = false;
+    if(this.vaccinesByDist) {
+      this.vaccinesByDist.unsubscribe();
+    }
+    if(this.vaccinesByPin) {
+      this.vaccinesByPin.unsubscribe();
     }
   }
 }

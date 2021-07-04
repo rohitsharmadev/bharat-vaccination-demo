@@ -31,7 +31,71 @@
     </div>
   </mat-card>
 </div>
-<div class="mat-elevation-z8">
+<div *ngIf="isSearchCalled" class="mat-elevation-z8">
+  <div *ngIf="isData" class="filter-section">
+    <h5><span aria-label="Slot Search Results" tabindex="0"
+        class="search-title accessibility-plugin-ac">Slot Search Results </span><span
+        class="center-count accessibility-plugin-ac">({{isData}} Center(s) Found)</span></h5>
+    <div class="show-result"><span
+        class="show-result__text accessibility-plugin-ac">Showing results for: </span>
+    </div>
+    <div class="filter-result"><span tabindex="0"
+        class="filter-result__text accessibility-plugin-ac" aria-label="Filter results by">Filter results by: </span>
+      <ul>
+        <li>
+          <p class="accessibility-plugin-ac">Availability:</p>
+          <div class="agefilterblock">
+            <div class="form-check"><input type="checkbox" id="c1"
+                class="chk-btn"><label for="c1" tabindex="0" class="accessibility-plugin-ac">Availability
+                </label></div>
+          </div>
+        </li>
+        <li>
+          <p class="accessibility-plugin-ac">Age:</p>
+          <div class="agefilterblock">
+            <div class="form-check"><input type="checkbox" id="c1"
+                class="chk-btn"><label for="c1" tabindex="0" class="accessibility-plugin-ac">Age
+                18+</label></div>
+            <div class="form-check"><input type="checkbox" id="ca1"
+                class="chk-btn"><label for="ca1" tabindex="0" class="accessibility-plugin-ac">18-44
+                Only</label></div>
+            <div class="form-check"><input type="checkbox" id="c2"
+                class="chk-btn"><label for="c2" tabindex="0" class="accessibility-plugin-ac">Age
+                45+</label></div>
+          </div>
+        </li>
+        <li>
+          <p class="accessibility-plugin-ac">Cost:</p>
+          <div class="agefilterblock">
+            <div class="form-check"><input type="checkbox" id="c6"
+                class="chk-btn"><label for="c6" tabindex="0"
+                class="accessibility-plugin-ac">Paid</label></div>
+            <div class="form-check"><input type="checkbox" id="c7"
+                class="chk-btn"><label for="c7" tabindex="0"
+                class="accessibility-plugin-ac">Free</label></div>
+          </div>
+        </li>
+        <li class="ng-star-inserted">
+          <p class="accessibility-plugin-ac">Vaccine: </p>
+          <div class="agefilterblock">
+            <div class="form-check ng-star-inserted" (click)="applyFilter('Covishield')"><input type="checkbox"
+                id="c3" class="chk-btn"><label for="c3" tabindex="0"
+                class="accessibility-plugin-ac">Covishield</label></div>
+            <!---->
+            <div class="form-check ng-star-inserted"><input type="checkbox"
+                id="c4" class="chk-btn"><label for="c4" tabindex="0"
+                class="accessibility-plugin-ac">Covaxin</label></div>
+            <!---->
+            <div class="form-check ng-star-inserted"><input type="checkbox"
+                id="c5" class="chk-btn"><label for="c5" tabindex="0"
+                class="accessibility-plugin-ac">Sputnik V</label></div>
+            <!---->
+          </div>
+        </li>
+        <!---->
+      </ul>
+    </div>
+  </div>
   <ng-container *ngIf="isData && dataSource.filteredData">
   <table mat-table [dataSource]="dataSource">
     <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index" matColumnDef="{{disCol}}">
@@ -40,8 +104,8 @@
         <td mat-cell *matCellDef="let element">
           <mat-list>
             <ng-container *ngFor="let item of element.address">
-              <mat-list-item>{{item.name}}</mat-list-item>
-              <mat-list-item>{{item.address}}</mat-list-item>
+              <mat-list-item class="center-name">{{item.name}}</mat-list-item>
+              <mat-list-item class="main-addr">{{item.address}}</mat-list-item>
             </ng-container>
           </mat-list>
         </td>
@@ -55,13 +119,13 @@
               <mat-list-item><button mat-raised-button
                   [color]="dataSource.filteredData[i].center?.sessions[colIndex -1].available_capacity_dose1 > 0 ? 'sucess' : 'warn'">{{dataSource.filteredData[i].center?.sessions[colIndex
                   -1].available_capacity_dose1}}</button></mat-list-item>
-              <mat-list-item>{{dataSource.filteredData[i].center?.sessions[colIndex -1].vaccine}}</mat-list-item>
+              <mat-list-item><h5>{{dataSource.filteredData[i].center?.sessions[colIndex -1].vaccine}}</h5></mat-list-item>
               <mat-list-item class="vaccine-fee">{{dataSource.filteredData[i].center?.fee_type}}</mat-list-item>
               <mat-list-item class="vaccine-age">{{dataSource.filteredData[i].center?.sessions[colIndex -1].min_age_limit}}
               </mat-list-item>
             </ng-container>
             <ng-container *ngIf="!dataSource.filteredData[i].center?.sessions[colIndex -1]">
-              <mat-list-item><button mat-raised-button color="accent">NA</button></mat-list-item>
+              <mat-list-item><button mat-raised-button>NA</button></mat-list-item>
             </ng-container>
           </mat-list>
         </td>
