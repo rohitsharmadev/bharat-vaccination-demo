@@ -1,3 +1,4 @@
+import { element } from 'protractor';
 import { VaccinationCenterService } from './../../../services/vaccination-center.service';
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
@@ -13,8 +14,9 @@ export class VaccinationCenterDetailsComponent
   implements OnInit, AfterViewInit, OnDestroy {
   vaccinesByDist: Subscription;
   vaccinesByPin: Subscription;
-  tableData:any =[];
-  filters:any =[];
+  tableData: any = [];
+  filters: any = [];
+  filtersObj: any = {};
   displayedColumns: any[] = [' '];
   dataSource = new MatTableDataSource<any>();
   isData: number = 0;
@@ -103,12 +105,12 @@ export class VaccinationCenterDetailsComponent
       distId: distId,
       date: new Date()
     };
-    this.isSearchCalled =true;
-    this.vaccinesByDist =this.vaccinationCenterService
+    this.isSearchCalled = true;
+    this.vaccinesByDist = this.vaccinationCenterService
       .searchForSlotsByDist(obj)
       .subscribe((result) => {
-        this.tableData =[];
-        this.tableData =result.centers;
+        this.tableData = [];
+        this.tableData = result.centers;
         result.centers && result.centers.length ? this.getVaccinesList(result) : this.openSnackBar("No Records, please try with other options");
       });
   }
@@ -117,12 +119,12 @@ export class VaccinationCenterDetailsComponent
       pin: pin,
       date: new Date()
     };
-    this.isSearchCalled =true;
-    this.vaccinesByPin= this.vaccinationCenterService
+    this.isSearchCalled = true;
+    this.vaccinesByPin = this.vaccinationCenterService
       .searchForSlotsByPin(obj)
       .subscribe((result) => {
-        this.tableData =[];
-        this.tableData =result.centers;
+        this.tableData = [];
+        this.tableData = result.centers;
         result.centers && result.centers.length ? this.getVaccinesList(result) : this.openSnackBar("No Records, please try with other options");
       });
   }
@@ -148,32 +150,44 @@ export class VaccinationCenterDetailsComponent
     }
     flag && this.getSlotsList(finalSearch);
   }
-  applyFilter(event, key) {
-    console.log(event.target.checked);
-    if(event.target.checked) {
-      this.filters.push(key)
+  
+  //filters
+  applyFilter(event, key, value) {
+    if (event.target.checked) {
+      this.filters.push({ [key]: value });
     } else {
-      const index = this.filters.indexOf(key);
-if (index > -1) {
-  this.filters.splice(index, 1);
-}
-
+      const index = this.filters.findIndex((element) => { if (element[key] === value) { return true } });
+      if (index > -1) {
+        this.filters.splice(index, 1);
+      }
     }
 
-    
-    console.log(this.filters);
-    const filterValue = (event.target as HTMLInputElement).value;
-    console.log(this.dataSource);
-    //this.dataSource.filter = 'Krishna';
-     const filterData = this.tableData.filter((elem) => {
-       console.log(elem.fee_type === 'Free')
-       return elem.fee_type === 'Free' ? elem : null;
-     });
-     console.log(filterData);
-     this.getVaccinesList({centers: filterData});
-    //  this.dataSource = new MatTableDataSource<any>(filterData);
-    //  this.dataSource._updateChangeSubscription();
-    //  this.dataSource.paginator = this.paginator;
+    if (this.filters.length) {
+      let filterData: any = [];
+      for (let [i, elem] of this.tableData.entries()) {
+
+        for (let [i, searchKey] of this.filters.entries()) {
+          if (Object.keys(searchKey)[0] === 'fee_type') {
+            if (elem[Object.keys(searchKey)[0]] === searchKey[Object.keys(searchKey)[0]]) {
+              filterData.push(elem)
+            }
+          } else {
+            const sessions = elem.sessions.filter((elem1) => {
+              return elem1[Object.keys(searchKey)[0]] === searchKey[Object.keys(searchKey)[0]] ? elem1 : null;
+            });
+            const tempElem = Object.assign({}, elem);
+            tempElem.sessions = sessions;
+            sessions.length && filterData.push(tempElem);
+
+          }
+
+        }
+
+      }
+      this.getVaccinesList({ centers: filterData });
+    } else {
+      this.getVaccinesList({ centers: this.tableData });
+    }
   }
 
   onTabChanged(event) {
@@ -184,10 +198,10 @@ if (index > -1) {
   }
   ngOnDestroy() {
     this.isSearchCalled = false;
-    if(this.vaccinesByDist) {
+    if (this.vaccinesByDist) {
       this.vaccinesByDist.unsubscribe();
     }
-    if(this.vaccinesByPin) {
+    if (this.vaccinesByPin) {
       this.vaccinesByPin.unsubscribe();
     }
   }
